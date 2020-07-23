@@ -1,2 +1,3 @@
 [console_scripts]
 game = single_player_pong_python.main:__main__
+

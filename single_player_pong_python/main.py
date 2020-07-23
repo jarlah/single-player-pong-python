@@ -19,7 +19,6 @@ def create_paddle() -> turtle.Turtle:
     paddle.shapesize(stretch_wid=1, stretch_len=5)
     paddle.penup()
     paddle.goto(0, -250)
-    paddle.direction = Direction.NO_DIRECTION
     return paddle
 
 
