@@ -2,6 +2,7 @@ import turtle
 import time
 from enum import Enum
 from typing import Callable
+import atexit
 
 
 class Direction(Enum):
@@ -85,11 +86,13 @@ def setup_window():
     win.bgcolor("black")
     win.setup(width=800, height=600)
     win.tracer(0)
+    win.cv._rootwindow.resizable(False, False)
     return win
 
 
-def start():
+def start_game():
     win = setup_window()
+
     paddle = create_paddle()
     paddle_dir = Direction.NO_DIRECTION
 
@@ -102,9 +105,19 @@ def start():
         return paddle_dir
 
     setup_keypress(win, current_direction, update_direction)
+
     running = True
+
+    def exit_game():
+        nonlocal running
+        running = False
+        print("Bye")
+
+    atexit.register(exit_game)
+
     last_frame_time: float = 0
     fps = 30
+
     while running:
         current_time = time.time()
         delta_time = current_time - last_frame_time
@@ -112,8 +125,11 @@ def start():
         sleep_time = 1. / fps - delta_time
         if sleep_time > 0:
             time.sleep(sleep_time)
-        handle_direction(paddle, paddle_dir, delta_time)
-        win.update()
+        if running:
+            handle_direction(paddle, paddle_dir, delta_time)
+            win.update()
+
+    win.bye()
 
 
-start()
+start_game()
