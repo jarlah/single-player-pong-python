@@ -18,8 +18,18 @@ def create_paddle() -> turtle.Turtle:
     paddle.shape("square")
     paddle.shapesize(stretch_wid=1, stretch_len=5)
     paddle.penup()
-    paddle.goto(0, -250)
+    paddle.goto(0, -280)
     return paddle
+
+
+def create_ball() -> turtle.Turtle:
+    ball = turtle.Turtle()
+    ball.speed(0)
+    ball.color("blue")
+    ball.shape("circle")
+    ball.penup()
+    ball.goto(0, 0)
+    return ball
 
 
 def right_pressed(paddle_dir: Direction):
@@ -69,6 +79,13 @@ def handle_direction(paddle: turtle.Turtle, direction: Direction, dt: float):
     return func()
 
 
+def handle_ball_movement(ball: turtle.Turtle, paddle: turtle.Turtle):
+    ball_x = ball.xcor()
+    ball_y = ball.ycor()
+    paddle_x = paddle.xcor()
+    paddle_y = paddle.ycor()
+
+
 def setup_keypress(
     win: turtle.TurtleScreen,
     current_direction: Callable[[], Direction],
@@ -99,6 +116,8 @@ def setup_window():
 
 def start_game():
     win = setup_window()
+
+    ball = create_ball()
 
     paddle = create_paddle()
     paddle_dir = Direction.NO_DIRECTION
