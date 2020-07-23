@@ -5,8 +5,8 @@ from enum import Enum
 
 class Direction(Enum):
     NO_DIRECTION = 0
-    LEFT = 3
-    RIGHT = 4
+    LEFT = 1
+    RIGHT = 2
 
 
 def create_paddle() -> turtle.Turtle:
@@ -22,31 +22,23 @@ def create_paddle() -> turtle.Turtle:
 
 
 def right_pressed(paddle: turtle.Turtle):
-    def impl():
-        if paddle.dir == Direction.NO_DIRECTION:
-            paddle.dir = Direction.RIGHT
-    return impl
+    if paddle.dir == Direction.NO_DIRECTION:
+        paddle.dir = Direction.RIGHT
 
 
 def right_released(paddle: turtle.Turtle):
-    def impl():
-        if paddle.dir == Direction.RIGHT:
-            paddle.dir = Direction.NO_DIRECTION
-    return impl
+    if paddle.dir == Direction.RIGHT:
+        paddle.dir = Direction.NO_DIRECTION
 
 
 def left_pressed(paddle: turtle.Turtle):
-    def impl():
-        if paddle.dir == Direction.NO_DIRECTION:
-            paddle.dir = Direction.LEFT
-    return impl
+    if paddle.dir == Direction.NO_DIRECTION:
+        paddle.dir = Direction.LEFT
 
 
 def left_released(paddle: turtle.Turtle):
-    def impl():
-        if paddle.dir == Direction.LEFT:
-            paddle.dir = Direction.NO_DIRECTION
-    return impl
+    if paddle.dir == Direction.LEFT:
+        paddle.dir = Direction.NO_DIRECTION
 
 
 def move_left(dt, paddle: turtle.Turtle):
@@ -65,19 +57,19 @@ def move_right(dt, paddle: turtle.Turtle):
 
 def handle_direction(paddle, dt: float):
     switcher = {
-        Direction.RIGHT: move_right,
-        Direction.LEFT: move_left
+        Direction.RIGHT: lambda: move_right(dt, paddle),
+        Direction.LEFT: lambda: move_left(dt, paddle),
     }
-    func = switcher.get(paddle.dir, lambda _dt, _paddle: paddle)
-    return func(dt, paddle)
+    func = switcher.get(paddle.dir, lambda: paddle)
+    return func()
 
 
 def setup_keypress(win, paddle):
     win.listen()
-    win.onkeypress(right_pressed(paddle), "Right")
-    win.onkeyrelease(right_released(paddle), "Right")
-    win.onkeypress(left_pressed(paddle), "Left")
-    win.onkeyrelease(left_released(paddle), "Left")
+    win.onkeypress(lambda: right_pressed(paddle), "Right")
+    win.onkeyrelease(lambda: right_released(paddle), "Right")
+    win.onkeypress(lambda: left_pressed(paddle), "Left")
+    win.onkeyrelease(lambda: left_released(paddle), "Left")
 
 
 def setup_window():
