@@ -1,7 +1,7 @@
 import turtle
 import time
 from enum import Enum
-from typing import AnyStr, Callable
+from typing import Callable
 
 
 class Direction(Enum):
@@ -69,12 +69,14 @@ def handle_direction(paddle: turtle.Turtle, direction: Direction, dt: float):
     return func()
 
 
-def setup_keypress(win: turtle.TurtleScreen, direction: Direction, direction_updater: Callable[[Direction], None]):
+def setup_keypress(win: turtle.TurtleScreen,
+                   current_direction: Callable[[], Direction],
+                   update_direction: Callable[[Direction], None]):
     win.listen()
-    win.onkeypress(lambda: direction_updater(right_pressed(direction)), "Right")
-    win.onkeyrelease(lambda: direction_updater(right_released(direction)), "Right")
-    win.onkeypress(lambda: direction_updater(left_pressed(direction)), "Left")
-    win.onkeyrelease(lambda: direction_updater(left_released(direction)), "Left")
+    win.onkeypress(lambda: update_direction(right_pressed(current_direction())), "Right")
+    win.onkeyrelease(lambda: update_direction(right_released(current_direction())), "Right")
+    win.onkeypress(lambda: update_direction(left_pressed(current_direction())), "Left")
+    win.onkeyrelease(lambda: update_direction(left_released(current_direction())), "Left")
 
 
 def setup_window():
@@ -91,11 +93,15 @@ def start():
     paddle = create_paddle()
     paddle_dir = Direction.NO_DIRECTION
 
-    def dir_update(direction: Direction):
+    def update_direction(direction: Direction):
         nonlocal paddle_dir
         paddle_dir = direction
 
-    setup_keypress(win, paddle_dir, dir_update)
+    def current_direction():
+        nonlocal paddle_dir
+        return paddle_dir
+
+    setup_keypress(win, current_direction, update_direction)
     running = True
     last_frame_time: float = 0
     fps = 30
