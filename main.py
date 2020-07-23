@@ -1,6 +1,7 @@
 import turtle
 import time
 from enum import Enum
+from typing import AnyStr, Callable
 
 
 class Direction(Enum):
@@ -21,55 +22,59 @@ def create_paddle() -> turtle.Turtle:
     return paddle
 
 
-def right_pressed(paddle: turtle.Turtle):
-    if paddle.dir == Direction.NO_DIRECTION:
-        paddle.dir = Direction.RIGHT
+def right_pressed(paddle_dir: Direction):
+    if paddle_dir == Direction.NO_DIRECTION:
+        paddle_dir = Direction.RIGHT
+    return paddle_dir
 
 
-def right_released(paddle: turtle.Turtle):
-    if paddle.dir == Direction.RIGHT:
-        paddle.dir = Direction.NO_DIRECTION
+def right_released(paddle_dir: Direction):
+    if paddle_dir == Direction.RIGHT:
+        paddle_dir = Direction.NO_DIRECTION
+    return paddle_dir
 
 
-def left_pressed(paddle: turtle.Turtle):
-    if paddle.dir == Direction.NO_DIRECTION:
-        paddle.dir = Direction.LEFT
+def left_pressed(paddle_dir: Direction):
+    if paddle_dir == Direction.NO_DIRECTION:
+        paddle_dir = Direction.LEFT
+    return paddle_dir
 
 
-def left_released(paddle: turtle.Turtle):
-    if paddle.dir == Direction.LEFT:
-        paddle.dir = Direction.NO_DIRECTION
+def left_released(paddle_dir: Direction):
+    if paddle_dir == Direction.LEFT:
+        paddle_dir = Direction.NO_DIRECTION
+    return paddle_dir
 
 
-def move_left(dt, paddle: turtle.Turtle):
+def move_left(dt: float, paddle: turtle.Turtle):
     x = paddle.xcor()
     x -= 200 * dt
     paddle.setx(x)
     return paddle
 
 
-def move_right(dt, paddle: turtle.Turtle):
+def move_right(dt: float, paddle: turtle.Turtle):
     x = paddle.xcor()
     x += 200 * dt
     paddle.setx(x)
     return paddle
 
 
-def handle_direction(paddle, dt: float):
+def handle_direction(paddle: turtle.Turtle, direction: Direction, dt: float):
     switcher = {
         Direction.RIGHT: lambda: move_right(dt, paddle),
         Direction.LEFT: lambda: move_left(dt, paddle),
     }
-    func = switcher.get(paddle.dir, lambda: paddle)
+    func = switcher.get(direction, lambda: paddle)
     return func()
 
 
-def setup_keypress(win, paddle):
+def setup_keypress(win: turtle.TurtleScreen, direction: Direction, direction_updater: Callable[[Direction], None]):
     win.listen()
-    win.onkeypress(lambda: right_pressed(paddle), "Right")
-    win.onkeyrelease(lambda: right_released(paddle), "Right")
-    win.onkeypress(lambda: left_pressed(paddle), "Left")
-    win.onkeyrelease(lambda: left_released(paddle), "Left")
+    win.onkeypress(lambda: direction_updater(right_pressed(direction)), "Right")
+    win.onkeyrelease(lambda: direction_updater(right_released(direction)), "Right")
+    win.onkeypress(lambda: direction_updater(left_pressed(direction)), "Left")
+    win.onkeyrelease(lambda: direction_updater(left_released(direction)), "Left")
 
 
 def setup_window():
@@ -84,7 +89,13 @@ def setup_window():
 def start():
     win = setup_window()
     paddle = create_paddle()
-    setup_keypress(win, paddle)
+    paddle_dir = Direction.NO_DIRECTION
+
+    def dir_update(direction: Direction):
+        nonlocal paddle_dir
+        paddle_dir = direction
+
+    setup_keypress(win, paddle_dir, dir_update)
     running = True
     last_frame_time: float = 0
     fps = 30
@@ -95,7 +106,7 @@ def start():
         sleep_time = 1. / fps - delta_time
         if sleep_time > 0:
             time.sleep(sleep_time)
-        handle_direction(paddle, delta_time)
+        handle_direction(paddle, paddle_dir, delta_time)
         win.update()
 
 
