@@ -9,6 +9,8 @@ python = "^3.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+mypy = "^0.761"
+pre-commit = "^1.21.0"
 
 [tool.poetry.scripts]
 game = "single_player_pong_python.main:__main__"

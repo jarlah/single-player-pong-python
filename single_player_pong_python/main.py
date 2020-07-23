@@ -1,8 +1,8 @@
-import turtle
+import atexit
 import time
+import turtle
 from enum import Enum
 from typing import Callable
-import atexit
 
 
 class Direction(Enum):
@@ -19,7 +19,7 @@ def create_paddle() -> turtle.Turtle:
     paddle.shapesize(stretch_wid=1, stretch_len=5)
     paddle.penup()
     paddle.goto(0, -250)
-    paddle.dir = Direction.NO_DIRECTION
+    paddle.direction = Direction.NO_DIRECTION
     return paddle
 
 
@@ -70,14 +70,22 @@ def handle_direction(paddle: turtle.Turtle, direction: Direction, dt: float):
     return func()
 
 
-def setup_keypress(win: turtle.TurtleScreen,
-                   current_direction: Callable[[], Direction],
-                   update_direction: Callable[[Direction], None]):
+def setup_keypress(
+    win: turtle.TurtleScreen,
+    current_direction: Callable[[], Direction],
+    update_direction: Callable[[Direction], None],
+):
     win.listen()
-    win.onkeypress(lambda: update_direction(right_pressed(current_direction())), "Right")
-    win.onkeyrelease(lambda: update_direction(right_released(current_direction())), "Right")
+    win.onkeypress(
+        lambda: update_direction(right_pressed(current_direction())), "Right"
+    )
+    win.onkeyrelease(
+        lambda: update_direction(right_released(current_direction())), "Right"
+    )
     win.onkeypress(lambda: update_direction(left_pressed(current_direction())), "Left")
-    win.onkeyrelease(lambda: update_direction(left_released(current_direction())), "Left")
+    win.onkeyrelease(
+        lambda: update_direction(left_released(current_direction())), "Left"
+    )
 
 
 def setup_window():
@@ -122,7 +130,7 @@ def start_game():
         current_time = time.time()
         delta_time = current_time - last_frame_time
         last_frame_time = current_time
-        sleep_time = 1. / fps - delta_time
+        sleep_time = 1.0 / fps - delta_time
         if sleep_time > 0:
             time.sleep(sleep_time)
         if running:
