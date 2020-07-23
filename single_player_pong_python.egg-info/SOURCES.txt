@@ -1,8 +1,9 @@
-README.rst
+README.md
 setup.py
 single_player_pong_python/__init__.py
 single_player_pong_python/main.py
 single_player_pong_python.egg-info/PKG-INFO
 single_player_pong_python.egg-info/SOURCES.txt
 single_player_pong_python.egg-info/dependency_links.txt
+single_player_pong_python.egg-info/entry_points.txt
 single_player_pong_python.egg-info/top_level.txt

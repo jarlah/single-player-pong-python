@@ -10,6 +10,9 @@ python = "^3.8"
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 
+[tool.poetry.scripts]
+game = "single_player_pong_python.main:__main__"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
